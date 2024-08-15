@@ -21,6 +21,11 @@ public class CategoriesRepository implements ILibraryRepository<Categories>{
     @Override
     public Categories create(Categories categories) throws Exception {
         try {
+            // Validasi input tidak boleh kosong
+            if (categories.getCategory_name() == null || categories.getCategory_name().trim().isEmpty()) {
+                throw new Exception("Category name cannot be empty");
+            }
+
             // Generate a random ID
             categories.setId(randomStringGenerator.random());
 
@@ -38,10 +43,11 @@ public class CategoriesRepository implements ILibraryRepository<Categories>{
             System.out.println("Category created successfully with ID: " + categories.getId());
             return categories;
         } catch (DataAccessException e) {
-            e.printStackTrace(); // Log stack trace for debugging
+            // Lempar exception dengan pesan yang lebih deskriptif
             throw new Exception("Error while inserting category: " + e.getMessage(), e);
         }
     }
+
 
 
     @Override
