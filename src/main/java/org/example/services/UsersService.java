@@ -68,24 +68,40 @@ public class UsersService implements ILibraryService<Users>{
         }
     }
 
-
     @Override
     public void update(Users users, String id) throws Exception {
         try {
-            List<Users> users1 = usersRepository.findById(id);
-            if(users1.isEmpty()){
+            // Retrieve the user by ID
+            List<Users> existingUsers = usersRepository.findById(id);
+
+            // Check if the user exists
+            if (existingUsers.isEmpty()) {
                 throw new Exception("ID Not Found");
             }
-            List<Users> usersUpdate = usersRepository.findAll();
-            if(usersUpdate.stream().anyMatch(existingUser -> existingUser.getFull_name().equalsIgnoreCase(users.getFull_name()))){
-                throw new DataIntegrityViolationException("User Already Exist");
+
+            // Check for duplicate full names
+            List<Users> allUsers = usersRepository.findAll();
+            boolean isDuplicate = allUsers.stream()
+                    .anyMatch(existingUser ->
+                            !existingUser.getId().equals(id) &&
+                                    existingUser.getFull_name().equalsIgnoreCase(users.getFull_name()));
+
+            if (isDuplicate) {
+                throw new DataIntegrityViolationException("User Already Exists");
             }
-            Users existUser = users1.get(0);
-            existUser.setFull_name(users.getFull_name());
-            usersRepository.update(users, id);
+
+            // Update the user details
+            Users existingUser = existingUsers.get(0);
+            existingUser.setFull_name(users.getFull_name());
+            // Perform the update operation
+            usersRepository.update(existingUser, id);
+
             System.out.println("Update Success");
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
+        } catch (DataIntegrityViolationException e) {
+            throw new Exception("Data integrity violation: " + e.getMessage());
+        } catch (Exception e) {
+            throw new Exception("An error occurred: " + e.getMessage());
         }
     }
+
 }

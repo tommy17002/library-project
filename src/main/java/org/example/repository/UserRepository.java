@@ -46,11 +46,13 @@ public class UserRepository implements ILibraryRepository<Users>{
     @Override
     public List<Users> findById(String id) throws Exception {
         try {
-            return jdbcTemplate.query("SELECT * FROM users WHERE id = ?", new UserMapper(), Integer.parseInt(id));
+            // Gunakan id secara langsung jika tipe datanya adalah string
+            return jdbcTemplate.query("SELECT * FROM users WHERE id = ?", new UserMapper(), id);
         } catch (DataAccessException e) {
             throw new Exception("Error while finding user by id: " + e.getMessage(), e);
         }
     }
+
 
 
     @Override

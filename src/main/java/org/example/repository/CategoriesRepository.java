@@ -21,16 +21,28 @@ public class CategoriesRepository implements ILibraryRepository<Categories>{
     @Override
     public Categories create(Categories categories) throws Exception {
         try {
+            // Generate a random ID
             categories.setId(randomStringGenerator.random());
-            int result = jdbcTemplate.update("insert into categories values(?,?)", categories.getId(), categories.getCategory_name());
-            if(result <= 0){
-                throw new Exception("Failed to insert categories");
+
+            // Define the SQL statement with column names
+            String sql = "INSERT INTO categories (id, category_name) VALUES (?, ?)";
+
+            // Execute the update
+            int result = jdbcTemplate.update(sql, categories.getId(), categories.getCategory_name());
+
+            // Check if the insertion was successful
+            if (result <= 0) {
+                throw new Exception("Failed to insert category");
             }
+
+            System.out.println("Category created successfully with ID: " + categories.getId());
             return categories;
-        } catch (DataAccessException e){
-            throw new Exception(e.getMessage());
+        } catch (DataAccessException e) {
+            e.printStackTrace(); // Log stack trace for debugging
+            throw new Exception("Error while inserting category: " + e.getMessage(), e);
         }
     }
+
 
     @Override
     public List<Categories> findAll() throws Exception {
