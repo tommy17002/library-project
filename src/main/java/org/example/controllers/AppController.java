@@ -33,7 +33,7 @@ public class AppController {
         }
     }
     public void runApp() throws Exception {
-        System.out.println("================== LIBRARYFY =================");
+        System.out.println("================== LIBRARY =================");
         System.out.println("1. USERS");
         System.out.println("2. BOOKS CATEGORY");
         System.out.println("3. BOOKS");
